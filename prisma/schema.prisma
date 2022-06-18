@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Users {
+  id              Int       @id @default(autoincrement())
+  firstName       String    @db.VarChar(255)
+  lastName        String    @db.VarChar(255)
+  DOB             DateTime
+  familyId        Int       @default(autoincrement())
+  campid          Int       
+}
+
+model Families {
+  familyId    Int     @unique
+  familyName  String  @db.VarChar(255)   
+}
+
+model Org {
+  campid          Int       @id @default(autoincrement())
+  Name            String    @db.VarChar(255)
+  creationDate    DateTime  
+}
+
+model Provisions {
+  id              Int       @id @default(autoincrement())
+  Name            String    @db.VarChar(255)
+}
+
+model Notifications {
+  entityId        Int       @id @default(autoincrement())
+  provisionId     Int
+  notifyDate      DateTime
+}
+
+model ProvisionHistory {
+  id              Int      @id @default(autoincrement())
+  provisionId     Int              
+  userId          Int
+  date            DateTime
+  quantitiy       Int
+}
