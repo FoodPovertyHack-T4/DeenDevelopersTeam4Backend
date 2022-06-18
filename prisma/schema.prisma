@@ -17,7 +17,8 @@ model Users {
   lastName        String    @db.VarChar(255)
   DOB             DateTime
   familyId        Int       @default(autoincrement())
-  campid          Int       
+  campid          Int 
+  headOfFamily    Boolean      
 }
 
 model Families {

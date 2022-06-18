@@ -39,7 +39,7 @@ app.post('/camp',jsonParser, async (req, res) =>{
 
 app.post('/user',jsonParser ,async (req, res) => {
     console.log("in here with users")
-    const { firstName, lastName, dob,campid} = req.body
+    const { firstName, lastName, dob,campid,headOfFamily} = req.body
     console.log("the old date", dob)
     const dateParts = dob.split("/");
     const dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
@@ -49,7 +49,8 @@ app.post('/user',jsonParser ,async (req, res) => {
         firstName,
         lastName,
         DOB,
-        campid
+        campid,
+        headOfFamily
       },
     }).catch(error => {
         console.log(error)
