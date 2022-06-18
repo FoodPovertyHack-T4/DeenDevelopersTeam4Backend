@@ -15,6 +15,28 @@ app.get('/user', async (req, res) => {
     res.json(getAllUsers)
 })
 
+
+app.get('/camp', async (req, res) => {
+    const getAllCamps = await prisma.org.findMany()
+    res.json(getAllCamps)
+})
+
+app.post('/camp',jsonParser, async (req, res) =>{
+    console.log("adding new camp")
+    const { Name} = req.body
+    const creationDate = new Date()
+    console.log("new date", creationDate)
+    const camp = await prisma.org.create({
+        data: {
+          Name,
+          creationDate
+        },
+      }).catch(error => {
+          console.log(error)
+      })
+    res.json(camp)
+})
+
 app.post('/user',jsonParser ,async (req, res) => {
     console.log("in here with users")
     const { firstName, lastName, dob,campid} = req.body
