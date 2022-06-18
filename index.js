@@ -37,6 +37,24 @@ app.post('/camp',jsonParser, async (req, res) =>{
     res.json(camp)
 })
 
+app.post("/provision", jsonParser,async (req, res) => {
+    console.log("adding new provisions")
+    const { Name} = req.body
+    const provision = await prisma.provisions.create({
+        data: {
+          Name,
+        },
+      }).catch(error => {
+          console.log(error)
+      })
+    res.json(provision)
+})
+
+app.get("/provision", jsonParser,async (req, res) => {
+    const provision = await prisma.provisions.findMany()
+    res.json(provision)
+})
+
 app.post('/user',jsonParser ,async (req, res) => {
     console.log("in here with users")
     const { firstName, lastName, dob,campid,headOfFamily} = req.body
