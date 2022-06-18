@@ -1,6 +1,6 @@
 const { PrismaClient } = require('@prisma/client')
-const { parseISO } = require('date-fns')
 const prisma = new PrismaClient()
+var cors = require('cors')
 
 const express = require('express')
 const app = express()
@@ -9,6 +9,7 @@ var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
+app.use(cors())
 
 app.get('/user', async (req, res) => {
     const getAllUsers = await prisma.users.findMany()
