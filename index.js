@@ -73,9 +73,8 @@ app.get("/notification", jsonParser, async (req, res) => {
     res.json(notification)
 })
 
-app.post("/provision/:id", jsonParser, async (req, res) => {
-    const provisionId = parseInt(req.params.id);
-    const { userId, quantitiy} = req.body
+app.post("/provision/add", jsonParser, async (req, res) => {
+    const { provisionId,userId, quantitiy} = req.body
     const date = new Date()
     const provision = await prisma.provisionHistory.create({
         data: {
