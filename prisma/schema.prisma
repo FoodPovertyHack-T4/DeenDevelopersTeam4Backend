@@ -41,6 +41,7 @@ model Notifications {
   entityId        Int       @id @default(autoincrement())
   provisionId     Int
   notifyDate      DateTime
+  familyId        Int
 }
 
 model ProvisionHistory {
