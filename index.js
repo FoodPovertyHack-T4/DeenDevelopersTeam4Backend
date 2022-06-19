@@ -146,7 +146,7 @@ app.post('/family', jsonParser, async (req, res) => {
     })
 
     const campId = camp.campid;
-    const familyId = Math.floor((Math.random() * Number.MAX_SAFE_INTEGER) + 1);
+    const familyId = Math.floor((Math.random() * 2000000000) + 1);
     
     const currentDate = new Date()
 
