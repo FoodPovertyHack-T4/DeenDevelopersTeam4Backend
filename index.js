@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client')
+const { v4: uuidv4 } = require('uuid');
 const prisma = new PrismaClient()
 var cors = require('cors')
 
@@ -110,6 +111,56 @@ app.post('/user', jsonParser, async (req, res) => {
         console.log(error)
     })
     res.json(user)
+})
+
+app.post('/family', jsonParser, async (req, res) => {
+    console.log("Posting a family")
+
+    if(req.body == null){
+        res.status(500);
+    }
+
+    const { mainFirstName, mainLastName, mainAge, campName, dependants } = req.body;
+
+    // Add Camp
+    const camp = await prisma.org.create({
+        data: {
+            'Name': campName,
+            'creationDate': new Date()
+        },
+    }).catch(error => {
+        console.log(error)
+    })
+
+    const campId = camp.campid;
+    const familyId = uuidv4();
+    const currentDate = new Date()
+
+    let familyMembers = []
+    familyMembers.push({
+        'firstName' : mainFirstName,
+        'lastName': mainLastName,
+        'DOB': new Date(currentDate.getFullYear() - mainAge, currentDate.getMonth(), currentDate.getDay()),
+        'headOfFamily': true,
+        'familyId': familyId,
+        'campId': campId
+    })
+
+    familyMembers = familyMembers.concat(
+        dependants.map((dependant) => {
+            dependant.DOB = new Date(currentDate.getFullYear() - mainAge, currentDate.getMonth(), currentDate.getDay());
+            dependant.familyId = familyId;
+            dependant.headOfFamily = false;
+            dependant.campId = campId;
+            return dependant
+    }))
+
+    const users = await prisma.users.createMany({
+        data: familyMembers,
+    }).catch(error => {
+        console.log(error)
+    })
+    res.json(users)
 })
 
 app.listen(port, () => {
