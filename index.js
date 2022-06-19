@@ -92,11 +92,11 @@ app.post("/provision/add", jsonParser, async (req, res) => {
 
 app.post("/notification", jsonParser, async (req, res) => {
     console.log("in here with notifications")
-    const { entityId,provisionId } = req.body
+    const { familyId,provisionId } = req.body
     const notifyDate = new Date(Date.now() + 12096e5);
     const notification = await prisma.notifications.create({
         data: {
-            entityId,
+            familyId,
             provisionId,
             notifyDate
         },
