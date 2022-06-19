@@ -127,6 +127,60 @@ app.post('/user', jsonParser, async (req, res) => {
     res.json(user)
 })
 
+app.post('/family', jsonParser, async (req, res) => {
+    if(req.body == null){
+        res.status(500);
+    }
+
+    const { mainFirstName, mainLastName, mainAge, campName, dependants } = req.body;
+
+    // Add Camp
+    const camp = await prisma.org.create({
+        data: {
+            'Name': campName,
+            'creationDate': new Date()
+        },
+    }).catch(error => {
+        console.log(error);
+        res.status(500);
+    })
+
+    const campId = camp.campid;
+    const familyId = Math.floor((Math.random() * Number.MAX_SAFE_INTEGER) + 1);
+    
+    const currentDate = new Date()
+
+    let familyMembers = []
+    familyMembers.push({
+        'firstName' : mainFirstName,
+        'lastName': mainLastName,
+        'DOB': new Date(currentDate.getFullYear() - mainAge, currentDate.getMonth(), currentDate.getDay()),
+        'headOfFamily': true,
+        'familyId': familyId,
+        'campid': campId
+    })
+
+    familyMembers = familyMembers.concat(
+        dependants.map((dependant) => {
+            dependant.DOB = new Date(currentDate.getFullYear() - dependant.DOB, currentDate.getMonth(), currentDate.getDay());
+            dependant.familyId = familyId;
+            dependant.headOfFamily = false;
+            dependant.campid = campId;
+            return dependant
+    }))
+
+    console.log(`Adding to users table: ${JSON.stringify(familyMembers)}`);
+
+    const count = await prisma.users.createMany({
+        data: familyMembers,
+    }).catch(error => {
+        console.log(error);
+        res.status(500);
+    })
+    console.log(`Successfully added: ${JSON.stringify(count)}`)
+    res.json(count);
+})
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
