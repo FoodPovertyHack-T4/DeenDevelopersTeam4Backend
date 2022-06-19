@@ -64,13 +64,35 @@ app.post("/provision", jsonParser, async (req, res) => {
 })
 
 app.get("/provision", jsonParser, async (req, res) => {
-    const provision = await prisma.provisions.findMany()
+    const provision = await prisma.provisions.findMany();
     res.json(provision)
 })
 
-app.get("/notification", jsonParser, async (req, res) => {
-    const notification = await prisma.notifications.findMany()
-    res.json(notification)
+app.get("/notifications", jsonParser, async (req, res) => {
+
+    // will filter by those due in the next two weeks
+    const notifications = await prisma.notifications.findMany();
+    const provisionMap = {
+        "1": "Food",
+        "2": "Hygeine",
+        "3": "Abaya",
+        "4": "Baby Powder"
+    }
+    const families = await prisma.families.findMany();
+
+    console.log(families);
+
+    let _notifications = notifications.map((n) => {
+        console.log(n);
+        n.provisionName = provisionMap[n.provisionId.toString()];
+        const _familyName = families.find((f) => f.familyId == n.familyId)?.familyName;
+        n.familyName = _familyName == null ? "No Name" : _familyName;
+        return n;
+    })
+
+    console.log(` NOTIFS ${JSON.stringify(_notifications)}`);
+
+    res.json(_notifications)
 })
 
 app.post("/provision/add", jsonParser, async (req, res) => {
@@ -92,6 +114,7 @@ app.post("/provision/add", jsonParser, async (req, res) => {
 
 app.post("/notification", jsonParser, async (req, res) => {
     console.log("in here with notifications")
+    console.log(req.body);
     const { familyId,provisionId } = req.body
     const notifyDate = new Date(Date.now() + 12096e5);
     const notification = await prisma.notifications.create({
@@ -171,14 +194,20 @@ app.post('/family', jsonParser, async (req, res) => {
 
     console.log(`Adding to users table: ${JSON.stringify(familyMembers)}`);
 
-    const count = await prisma.users.createMany({
+    await prisma.users.createMany({
         data: familyMembers,
     }).catch(error => {
         console.log(error);
         res.status(500);
     })
-    console.log(`Successfully added: ${JSON.stringify(count)}`)
-    res.json(count);
+
+    const result = await prisma.families.create({
+        data: {
+            familyId: familyId,
+            familyName: mainLastName 
+        }
+    })
+    res.json(result);
 })
 
 app.listen(port, () => {
